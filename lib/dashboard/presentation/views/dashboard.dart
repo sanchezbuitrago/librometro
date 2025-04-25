@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:librometro/core/presentation/widgets/buttons.dart';
 import 'package:librometro/core/presentation/widgets/scaffold.dart';
+import 'package:librometro/core/services/routes.dart';
 import 'package:librometro/dashboard/domain/models/events.dart';
 import 'package:librometro/dashboard/domain/models/books.dart';
 import 'package:librometro/dashboard/domain/veiw_model/dashboard.dart';
@@ -63,11 +65,13 @@ class _DashboardState extends State<Dashboard> {
 
     return DefaultScaffold(
       appBarTitle: "Librómetro",
+      bottomNavigationBar: DefaultButtonNavigationBar(child: Text("Agregar Libro"), onPressed: (){
+        AppRoutes.navigateTo(context, AppRoutes.createBook);
+      },),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Título opcional o cualquier otro contenido
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:librometro/dashboard/presentation/views/dashboard.dart';
 
 import 'core/services/notifications.dart';
+import 'core/services/routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +30,9 @@ class MyApp extends StatelessWidget {
           onSurface: Colors.black
         ),
       ),
-      home: const Dashboard(),
+      navigatorKey: AppRoutes.navigatorKey,
+      onGenerateRoute: AppRoutes.generateRoute,
+      initialRoute: AppRoutes.home,
     );
   }
 }
