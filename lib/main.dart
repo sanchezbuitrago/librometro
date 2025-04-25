@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:librometro/dashboard/presentation/views/dashboard.dart';
 
-void main() {
+import 'core/services/notifications.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();  // Inicializa el servicio de notificaciones
   runApp(const MyApp());
 }
 
