@@ -26,11 +26,12 @@ class AppRoutes {
         builder: (context) => Dashboard());
   }
 
-  static void navigateTo(BuildContext context, String routeName,
+  static Future<dynamic>? navigateTo(BuildContext context, String routeName,
       {Object? arguments}) {
     if (ModalRoute.of(context)?.settings.name != routeName) {
-      Navigator.pushNamed(context, routeName, arguments: arguments);
+      return Navigator.pushNamed(context, routeName, arguments: arguments);
     }
+    return null;
   }
 
   static void goBack(BuildContext context) {

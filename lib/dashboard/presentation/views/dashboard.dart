@@ -8,6 +8,12 @@ import 'package:librometro/dashboard/domain/veiw_model/dashboard.dart';
 import 'package:librometro/dashboard/presentation/widgets/book_card.dart';
 import 'package:librometro/dashboard/presentation/widgets/statistic_card.dart';
 
+enum BookStatus{
+  pending,
+  finalized,
+  inProcess
+}
+
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
@@ -16,13 +22,15 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-
   DashboardViewModel viewModel = DashboardViewModel();
   List<StatisticCard> statistics = [];
   List<Book> inProcessBooks = [];
+  List<Book> pendingBooks = [];
+  List<Book> finalizedBooks = [];
+  BookStatus bookListType = BookStatus.inProcess;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     getStatistics();
   }
@@ -32,17 +40,69 @@ class _DashboardState extends State<Dashboard> {
     processLibraryEvents(getStatisticsResponse);
   }
 
-  void processLibraryEvents(LibraryEvent event){
-    if(event is LibraryStatisticsConsulted){
+  void processLibraryEvents(LibraryEvent event) {
+    if (event is LibraryStatisticsConsulted) {
       setState(() {
         inProcessBooks = event.inProgressBooks;
-        statistics.add(StatisticCard(name: "En proceso", value: event.inProgressBooks.length.toString()));
-        statistics.add(StatisticCard(name: "Finalizados", value: event.finalizeBooks.length.toString()));
-        statistics.add(StatisticCard(name: "Pendientes", value: event.pendingBooks.length.toString()));
-        statistics.add(StatisticCard(name: "Horas de Lectura", value: event.readingHours.toString()));
-        statistics.add(StatisticCard(name: "Paginas por minuto", value: event.pagesMerMinute.toString()));
+        pendingBooks = event.pendingBooks;
+        finalizedBooks = event.finalizeBooks;
+        statistics.clear();
+        statistics.add(
+          StatisticCard(
+            name: "En proceso",
+            value: event.inProgressBooks.length.toString(),
+          ),
+        );
+        statistics.add(
+          StatisticCard(
+            name: "Finalizados",
+            value: event.finalizeBooks.length.toString(),
+          ),
+        );
+        statistics.add(
+          StatisticCard(
+            name: "Pendientes",
+            value: event.pendingBooks.length.toString(),
+          ),
+        );
+        statistics.add(
+          StatisticCard(
+            name: "Horas de Lectura",
+            value: event.readingHours.toString(),
+          ),
+        );
+        statistics.add(
+          StatisticCard(
+            name: "Paginas por minuto",
+            value: event.pagesMerMinute.toString(),
+          ),
+        );
       });
     }
+  }
+
+  String capitalize(String text) {
+    if (text.isEmpty) return text;
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
+  }
+
+  Column getBookList(){
+    List<Book> books = pendingBooks;
+    if(bookListType == BookStatus.finalized){
+      books = finalizedBooks;
+    }
+
+    if(bookListType == BookStatus.inProcess){
+      books = inProcessBooks;
+    }
+
+    return Column(
+      children: [
+        ...List.generate(books.length, (index) {
+          return BookCard(book: books[index]);
+        }),
+      ],
+    );
   }
 
   @override
@@ -50,24 +110,35 @@ class _DashboardState extends State<Dashboard> {
     Widget optionsGrid = Wrap(
       spacing: 10,
       runSpacing: 10,
-      children: [
-        ...statistics
-      ],
+      children: [...statistics],
     );
 
-    Widget bookList = Column(
-      children: [
-        ...List.generate(inProcessBooks.length, (index) {
-          return BookCard(book: inProcessBooks[index]);
-        }),
-      ],
-    );
+    List<DropdownMenuItem<BookStatus>> dropDownItems = [
+      DropdownMenuItem<BookStatus>(
+        value: BookStatus.inProcess,
+        child: Text(capitalize(BookStatus.inProcess.name.trim())),
+      ),
+      DropdownMenuItem<BookStatus>(
+        value: BookStatus.pending,
+        child: Text(capitalize(BookStatus.pending.name.trim())),
+      ),
+      DropdownMenuItem<BookStatus>(
+        value: BookStatus.finalized,
+        child: Text(capitalize(BookStatus.finalized.name)),
+      ),
+    ];
+
 
     return DefaultScaffold(
       appBarTitle: "Librómetro",
-      bottomNavigationBar: DefaultButtonNavigationBar(child: Text("Agregar Libro"), onPressed: (){
-        AppRoutes.navigateTo(context, AppRoutes.createBook);
-      },),
+      bottomNavigationBar: DefaultButtonNavigationBar(
+        child: Text("Agregar Libro"),
+        onPressed: () {
+          AppRoutes.navigateTo(context, AppRoutes.createBook)?.then((value) {
+            getStatistics();
+          });
+        },
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,23 +147,53 @@ class _DashboardState extends State<Dashboard> {
               padding: const EdgeInsets.all(10.0),
               child: Text(
                 "Estadísticas",
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleLarge,
               ),
             ),
 
             // 🟦 optionsGrid dentro de un SizedBox con altura fija
             Container(margin: EdgeInsets.all(10), child: optionsGrid),
 
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                "Mis libros",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      "Mis libros",
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .titleLarge,
+                    ),
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: DropdownButton<BookStatus>(
+                      value: bookListType,
+                      iconEnabledColor: Colors.white,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .titleLarge,
+                      items:dropDownItems,
+                      onChanged: (value) {
+                        if(value != null){
+                          setState(() {
+                            bookListType = value;
+                          });
+                        }
+                      },
+                    ),
+                )
+              ],
             ),
 
-            // 🟩 bookList dentro de su propio Column
-            bookList,
+            getBookList(),
           ],
         ),
       ),

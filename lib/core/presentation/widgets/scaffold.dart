@@ -5,7 +5,8 @@ class DefaultScaffold extends StatelessWidget {
   final String appBarTitle;
   final Widget body;
   final Widget? bottomNavigationBar;
-  const DefaultScaffold({super.key, required this.appBarTitle, required this.body, this.bottomNavigationBar});
+  final bool isLoading;
+  const DefaultScaffold({super.key, required this.appBarTitle, required this.body, this.bottomNavigationBar, this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,7 @@ class DefaultScaffold extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: DefaultAppBar(title: appBarTitle),
       bottomNavigationBar: bottomNavigationBar,
-      body: body,
+      body: isLoading ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.secondary,)) :body,
     );
   }
 }

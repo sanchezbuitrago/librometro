@@ -18,16 +18,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        useMaterial3: true,
         colorScheme: ColorScheme(
-          brightness: Brightness.dark,
+          brightness: Brightness.light,
           primary: Colors.deepOrangeAccent,
           onPrimary: Colors.black,
           secondary: Color(0xFF494747),
           onSecondary: Colors.white,
-          error: Colors.redAccent,
-          onError: Colors.white,
-          surface: Colors.white,
-          onSurface: Colors.black
+          error: Color(0xFFFF0000),
+          onError: Colors.black,
+          surface: Color(0xFF494747),
+          onSurface: Colors.white
         ),
       ),
       navigatorKey: AppRoutes.navigatorKey,

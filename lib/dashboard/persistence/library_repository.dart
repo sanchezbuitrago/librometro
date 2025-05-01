@@ -12,6 +12,7 @@ class LibraryRepository {
 
   Future<Library> getLibrary() async {
     Map<String, dynamic>? libraryInStorage = await secureStorage.get(SecureStorageKey.library);
+    print(libraryInStorage);
     return libraryInStorage == null || libraryInStorage.isEmpty ? Library() : Library.fromMap(libraryInStorage);
   }
 

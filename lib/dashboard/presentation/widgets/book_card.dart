@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:librometro/dashboard/domain/models/books.dart';
 
@@ -14,8 +16,13 @@ class BookCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: Image.network(
-              'https://images.cdn2.buscalibre.com/fit-in/360x360/67/2e/672ee81ffd4909a069d4bbcfeeecfe0e.jpg',
+            child: book.localImage != null ? Image.file(
+              File(book.localImage ?? ""),
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ) :Image.network(
+              book.imageUrl,
               width: 100,
               height: 100,
               fit: BoxFit.cover,
@@ -41,16 +48,16 @@ class BookCard extends StatelessWidget {
                     children: [
                       Flexible(
                         child: LinearProgressIndicator(
-                          value: 0.5,
+                          value: book.readingPercentage,
                           minHeight: 5,
                           backgroundColor: Colors.grey[300],
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.blue,
+                            Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                       ),
                       SizedBox(width: 10),
-                      Text("${(book.readingPages * 100 / book.totalPages).toString()}%"),
+                      Text("${book.readingPercentage.toString()}%"),
                     ],
                   ),
                 ],

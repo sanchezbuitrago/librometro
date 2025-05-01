@@ -27,12 +27,20 @@ class LibraryController {
 
   Future<List<Book>> getFinalizedBooks() async {
     Library library = await libraryRepository.getLibrary();
-    return library.inProcessBooks;
+    return library.finalizedBooks;
   }
 
   Future<List<Book>> getPendingBooks() async {
     Library library = await libraryRepository.getLibrary();
-    return library.inProcessBooks;
+    return library.pendingBooks;
+  }
+
+  Future<Book> createBook(String name, int totalPages, String? filePath) async {
+    Library library = await libraryRepository.getLibrary();
+    Book newBook = Book(name: name, totalPages: totalPages, localImage: filePath);
+    library.addBookToPendingList(newBook);
+    libraryRepository.saveLibrary(library);
+    return newBook;
   }
 }
 

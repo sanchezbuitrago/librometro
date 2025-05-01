@@ -12,3 +12,8 @@ class LibraryStatisticsConsulted extends LibraryEvent {
   LibraryStatisticsConsulted({required this.pendingBooks, required this.finalizeBooks, required this.inProgressBooks, required this.pagesMerMinute, required this.readingHours});
 
 }
+
+
+class BookCreated extends LibraryEvent {
+  BookCreated();
+}
