@@ -2,10 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:librometro/dashboard/presentation/views/create_book_page.dart';
 import 'package:librometro/dashboard/presentation/views/dashboard.dart';
+import 'package:librometro/dashboard/presentation/views/timer_page.dart';
+
+import 'package:librometro/dashboard/domain/models/books.dart';
 
 class AppRoutes {
   static const String home = '/';
   static const String createBook = "create-books";
+  static const String bookTimer = "book-timer";
 
   static final GlobalKey<NavigatorState> navigatorKey =
   GlobalKey<NavigatorState>();
@@ -13,6 +17,10 @@ class AppRoutes {
   static final Map<String, Widget Function(BuildContext)> routes = {
     home: (context) => Dashboard(),
     createBook: (context) => CreateBookPage(),
+    bookTimer: (context){
+      final Book book = ModalRoute.of(context)!.settings.arguments as Book;
+      return TimerPage(book: book);
+    },
   };
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -34,8 +42,8 @@ class AppRoutes {
     return null;
   }
 
-  static void goBack(BuildContext context) {
-    Navigator.pop(context);
+  static Future<dynamic>? goBack(BuildContext context) async {
+    return Navigator.pop(context);
   }
 
   static void resetTo(BuildContext context, String routeName,

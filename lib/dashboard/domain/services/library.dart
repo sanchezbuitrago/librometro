@@ -1,3 +1,4 @@
+import 'package:librometro/core/services/base_types.dart';
 import 'package:librometro/dashboard/persistence/library_repository.dart';
 import 'package:librometro/dashboard/domain/models/books.dart';
 
@@ -37,10 +38,17 @@ class LibraryController {
 
   Future<Book> createBook(String name, int totalPages, String? filePath) async {
     Library library = await libraryRepository.getLibrary();
-    Book newBook = Book(name: name, totalPages: totalPages, localImage: filePath);
+    Book newBook = Book(id: IDGenerator.getId(), name: name, totalPages: totalPages, localImage: filePath);
     library.addBookToPendingList(newBook);
     libraryRepository.saveLibrary(library);
     return newBook;
   }
+
+  Future<void> addReadingTime(String id, Duration readingTime, int readingPages) async {
+    Library library = await libraryRepository.getLibrary();
+    library.addReadingEventToBook(id, readingTime, readingPages);
+    libraryRepository.saveLibrary(library);
+  }
+
 }
 

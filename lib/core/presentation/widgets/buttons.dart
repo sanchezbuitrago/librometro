@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DefaultButtonNavigationBar extends StatelessWidget {
-  final void Function() onPressed;
+  final void Function()? onPressed;
   final Widget? child;
   const DefaultButtonNavigationBar(
       {super.key, required this.onPressed, required this.child});
@@ -13,7 +13,7 @@ class DefaultButtonNavigationBar extends StatelessWidget {
       child: ElevatedButton(
         style: ButtonStyle(
           backgroundColor:
-          WidgetStateProperty.all(Theme.of(context).colorScheme.secondary),
+          onPressed != null ? WidgetStateProperty.all(Theme.of(context).colorScheme.secondary) : WidgetStateProperty.all(Colors.grey),
           foregroundColor: WidgetStateProperty.all(
               Theme.of(context).colorScheme.onSecondary),
           shape: WidgetStateProperty.all(

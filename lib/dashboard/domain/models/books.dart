@@ -1,3 +1,5 @@
+import 'package:librometro/dashboard/domain/models/exeptions.dart';
+
 class Library {
   List<Book> pendingBooks;
   List<Book> inProcessBooks;
@@ -15,7 +17,67 @@ class Library {
        finalizedBooks = finalizedBooks ?? [],
        inProcessBooks = inProcessBooks ?? [],
        totalReadingTime = totalReadingTime ?? Duration(),
-       totalReadingPages = totalReadingPages ?? 0;
+       totalReadingPages = totalReadingPages ?? 0 {
+
+    List<Book> totalBooks = [];
+    totalBooks.addAll(this.inProcessBooks);
+    totalBooks.addAll(this.pendingBooks);
+    totalBooks.addAll(this.finalizedBooks);
+
+    for(int i=0; i<totalBooks.length;i++){
+      this.totalReadingTime = Duration(milliseconds: this.totalReadingTime.inMilliseconds + totalBooks[i].readingTime.inMilliseconds);
+      this.totalReadingPages = this.totalReadingPages + totalBooks[i].totalPages;
+    }
+  }
+
+  Book? _findBookInInProgressList(String id){
+    for(int i=0;i < inProcessBooks.length; i++){
+      if(inProcessBooks[i].id == id){
+        return inProcessBooks[i];
+      }
+    }
+    return null;
+  }
+
+  Book? _findBookInPendingList(String id){
+    for(int i=0;i < pendingBooks.length; i++){
+      if(pendingBooks[i].id == id){
+        return pendingBooks[i];
+      }
+    }
+    return null;
+  }
+
+
+  Book? _findBookInFinalizedList(String id){
+    for(int i=0;i < finalizedBooks.length; i++){
+      if(finalizedBooks[i].id == id){
+        return finalizedBooks[i];
+      }
+    }
+    return null;
+  }
+
+
+  void addReadingEventToBook(String id, Duration readingTime, int readingPages){
+    Book? book;
+    book = _findBookInFinalizedList(id);
+    if( book != null){
+      throw BookAlreadyFinalized();
+    }
+
+    book = _findBookInInProgressList(id);
+    if(book != null){
+      book.addReadingEvent(ReadingEvent(readingDate: DateTime.now(), readingTime: readingTime, readingPages: readingPages));
+    }
+
+    book = _findBookInPendingList(id);
+    if(book != null){
+      pendingBooks.remove(book);
+      inProcessBooks.add(book);
+      book.addReadingEvent(ReadingEvent(readingDate: DateTime.now(), readingTime: readingTime, readingPages: readingPages));
+    }
+  }
 
   static Library fromMap(Map<String, dynamic> map) {
     List<Book> pendingBook = [];
@@ -78,6 +140,7 @@ class Library {
 }
 
 class Book {
+  String id;
   String name;
   int totalPages;
   String? localImage;
@@ -89,6 +152,7 @@ class Book {
   List<ReadingEvent> readingEvents;
 
   Book({
+    required this.id,
     required this.name,
     required this.totalPages,
     this.localImage,
@@ -125,6 +189,7 @@ class Book {
       readingEventsMap.add(readingEvents[i].toMap());
     }
     return {
+      "id": id,
       "name": name,
       "totalPages": totalPages,
       "localImage": localImage,
@@ -139,6 +204,7 @@ class Book {
   static Book fromMap(Map<String, dynamic> map) {
     List<ReadingEvent> readingEvents = [];
     return Book(
+      id: map["id"],
       name: map["name"],
       totalPages: map["totalPages"],
       imageUrl: map["imageUrl"],

@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:librometro/core/services/notifications.dart';
 
-class TimerPage extends StatefulWidget {
-  const TimerPage({super.key});
+class BookTimer extends StatefulWidget {
+  final Function(bool)? onRunning;
+  final Function(Duration)? onPause;
+  const BookTimer({super.key, this.onRunning, this.onPause});
 
   @override
-  State<TimerPage> createState() => _TimerPageState();
+  State<BookTimer> createState() => _BookTimerState();
 }
 
-class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
+class _BookTimerState extends State<BookTimer> with WidgetsBindingObserver {
   late Timer _timer;
   int _elapsedSeconds = 0;
   DateTime? _startTime;
@@ -33,6 +35,7 @@ class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
   void _startTimer() {
     _startTime = DateTime.now().subtract(Duration(seconds: _elapsedSeconds));
     _isRunning = true;
+    widget.onRunning?.call(_isRunning);
     _saveState();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -48,6 +51,8 @@ class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
     setState(() {
       _isRunning = false;
     });
+    widget.onRunning?.call(_isRunning);
+    widget.onPause?.call(Duration(seconds: _elapsedSeconds));
     _saveState();
     NotificationService.cancelNotification(); // Cancela la notificación
   }
@@ -59,6 +64,8 @@ class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
       _isRunning = false;
       _startTime = null;
     });
+    widget.onRunning?.call(_isRunning);
+    widget.onPause?.call(Duration(seconds: _elapsedSeconds));
     _saveState();
     NotificationService.cancelNotification(); // Cancela la notificación
   }
@@ -68,6 +75,7 @@ class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
     setState(() {
       _elapsedSeconds = prefs.getInt('elapsed') ?? 0;
       _isRunning = prefs.getBool('running') ?? false;
+      widget.onRunning?.call(_isRunning);
       final startTimeMillis = prefs.getInt('startTime');
       if (startTimeMillis != null) {
         _startTime = DateTime.fromMillisecondsSinceEpoch(startTimeMillis);
@@ -111,11 +119,11 @@ class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
             children: [
               ElevatedButton(
                 onPressed: _isRunning ? _pauseTimer : _startTimer,
-                child: Text(_isRunning ? "Pausar" : "Iniciar"),
+                child: Text(_isRunning ? "Pausar" : "Iniciar", style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),),
               ),
               ElevatedButton(
                 onPressed: _resetTimer,
-                child: const Text("Reiniciar"),
+                child: Text("Limpiar", style: TextStyle(color: Theme.of(context).colorScheme.onSecondary)),
               ),
             ],
           ),

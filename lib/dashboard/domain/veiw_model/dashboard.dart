@@ -16,8 +16,8 @@ class DashboardViewModel{
       pendingBooks: pendingBooks,
       finalizeBooks: finalizedBooks,
       inProgressBooks: inProgressBooks,
-      pagesMerMinute: readingTime.inMinutes != 0 && readingPages !=0 ? readingTime.inMinutes / readingPages : 0,
-      readingHours: readingTime.inHours
+      pagesMerMinute: readingTime.inMinutes != 0 && readingPages !=0 ? readingPages / readingTime.inMinutes : 0,
+      readingHours: readingTime.inMinutes / 60
     );
   }
 

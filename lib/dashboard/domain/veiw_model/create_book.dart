@@ -6,8 +6,6 @@ class CreateBookViewModel{
   CreateBookViewModel();
 
   Future<LibraryEvent> createBook(String name, int totalPages, String? filePath) async {
-    print("CREATE BOOK -------------");
-    print(filePath);
     libraryController.createBook(name, totalPages, filePath);
     return BookCreated();
   }

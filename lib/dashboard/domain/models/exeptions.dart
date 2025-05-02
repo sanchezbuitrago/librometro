@@ -1,0 +1,1 @@
+class BookAlreadyFinalized implements Exception {}

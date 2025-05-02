@@ -32,8 +32,6 @@ class _CreateBookPageState extends State<CreateBookPage> {
   }
 
   void submit() async {
-    print(imageFile);
-    print(imageFile?.path);
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         isLoading=true;

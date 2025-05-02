@@ -68,13 +68,13 @@ class _DashboardState extends State<Dashboard> {
         statistics.add(
           StatisticCard(
             name: "Horas de Lectura",
-            value: event.readingHours.toString(),
+            value: event.readingHours.toStringAsFixed(1),
           ),
         );
         statistics.add(
           StatisticCard(
-            name: "Paginas por minuto",
-            value: event.pagesMerMinute.toString(),
+            name: "Estimado de paginas por minuto",
+            value: event.pagesMerMinute.toStringAsFixed(1),
           ),
         );
       });
@@ -87,7 +87,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Column getBookList(){
-    List<Book> books = pendingBooks;
+    List<Book> books = pendingBooks.reversed.toList();
     if(bookListType == BookStatus.finalized){
       books = finalizedBooks;
     }
@@ -99,7 +99,11 @@ class _DashboardState extends State<Dashboard> {
     return Column(
       children: [
         ...List.generate(books.length, (index) {
-          return BookCard(book: books[index]);
+          return BookCard(book: books[index], goToTimer: (){
+            AppRoutes.navigateTo(context, AppRoutes.bookTimer, arguments: books[index])?.then((value){
+              getStatistics();
+            });
+          },);
         }),
       ],
     );
@@ -192,7 +196,6 @@ class _DashboardState extends State<Dashboard> {
                 )
               ],
             ),
-
             getBookList(),
           ],
         ),
