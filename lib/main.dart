@@ -21,13 +21,13 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme(
           brightness: Brightness.light,
-          primary: Colors.deepOrangeAccent,
+          primary: Color(0xB32A4A83),
           onPrimary: Colors.black,
-          secondary: Color(0xFF494747),
-          onSecondary: Colors.white,
+          secondary: Color(0xFFCBD5E8),
+          onSecondary: Colors.black,
           error: Color(0xFFFF0000),
           onError: Colors.black,
-          surface: Color(0xFF494747),
+          surface: Color(0xFFCBD5E8),
           onSurface: Colors.white
         ),
       ),

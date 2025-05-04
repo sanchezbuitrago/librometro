@@ -44,9 +44,9 @@ class LibraryController {
     return newBook;
   }
 
-  Future<void> addReadingTime(String id, Duration readingTime, int readingPages) async {
+  Future<void> addReadingTime(String id, Duration readingTime, int lastReadPage) async {
     Library library = await libraryRepository.getLibrary();
-    library.addReadingEventToBook(id, readingTime, readingPages);
+    library.addReadingEventToBook(id, readingTime, lastReadPage);
     libraryRepository.saveLibrary(library);
   }
 

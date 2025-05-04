@@ -24,8 +24,8 @@ class _TimerPageState extends State<TimerPage> {
   Duration readingTime = Duration();
   TimerViewModel timerViewModel = TimerViewModel();
 
-  final _readingPagesFormKey = GlobalKey<FormState>();
-  final _readingPagesController = TextEditingController();
+  final GlobalKey<FormState> _readingPagesFormKey = GlobalKey<FormState>();
+  final TextEditingController _lastReadPageController = TextEditingController();
 
   void onRunning(bool running){
     setState(() {
@@ -41,7 +41,6 @@ class _TimerPageState extends State<TimerPage> {
 
   void saveReadingTime() async {
     if(_readingPagesFormKey.currentState?.validate() ?? false){
-      print("Click para guardar el tiempo transcurrido");
       await timerViewModel.addReadingTimeToBook(widget.book.id, readingTime, 10);
       if(mounted){
         AppRoutes.goBack(context)?.then((value){
@@ -69,8 +68,9 @@ class _TimerPageState extends State<TimerPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DefaultTextFormField(
-                      controller: _readingPagesController,
-                      labelText: "Número de paginas leidas",
+                      controller: _lastReadPageController,
+                      labelText: "¿ Cuál es la última pagina leida ?",
+                      textInputType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Este campo es requerido";
@@ -91,7 +91,7 @@ class _TimerPageState extends State<TimerPage> {
                           onPressed: (){saveReadingTime();},
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Theme.of(context).colorScheme.secondary),
-                          child: Text('Agregar número de paginas', style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),),
+                          child: Text('Guardar', style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),),
                         ),
                       ),
                     )
@@ -107,12 +107,12 @@ class _TimerPageState extends State<TimerPage> {
   Widget build(BuildContext context) {
     return DefaultScaffold(
         appBarTitle: "Cronómetro de lectura",
-        bottomNavigationBar: DefaultButtonNavigationBar(
+        bottomNavigationBar: readingTime.inMilliseconds > 0 ? DefaultButtonNavigationBar(
             onPressed: timerRunning || readingTime.inMilliseconds == 0 ? null : (){
               _showCreateInvestmentDialog(context);
             },
             child: Text("Guardar Tiempo de Lectura")
-        ),
+        ): null,
         body: SingleChildScrollView(
           child: Center(
             child: Column(

@@ -46,6 +46,10 @@ class _DashboardState extends State<Dashboard> {
         inProcessBooks = event.inProgressBooks;
         pendingBooks = event.pendingBooks;
         finalizedBooks = event.finalizeBooks;
+
+        bookListType = finalizedBooks.isNotEmpty ? BookStatus.finalized : BookStatus.inProcess;
+        bookListType = pendingBooks.isNotEmpty ? BookStatus.pending : BookStatus.inProcess;
+
         statistics.clear();
         statistics.add(
           StatisticCard(
